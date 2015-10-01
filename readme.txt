@@ -21,3 +21,5 @@ by Tianpei Xie
    3. Identify large gaps in numerical columns btw 25% and 75% data, in large_gap_list.csv
    4. Identify the string columns with only nan and one string, in outlier_str_list.csv
    5. Change the Springleaf_data_preprocessing_total.py. It now encodes the day/month/year/time into three different features: ‘orgname’ = (year-2010)*12+ month, and ‘orgname’+y = year-2010; and ‘orgname’+ month = month
+    
+    see https://github.com/TianpeiLuke/MDST_ggbrown/tree/master/data
