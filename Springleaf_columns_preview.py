@@ -89,7 +89,7 @@ for i in rlist:
                 
 # store the data and result
 summary_num = pd.DataFrame(info_num)
-summary_num.to_csv('./data/train_num_summary.csv')
+summary_num.to_csv('./data/train_num_summary.csv',index = False)
 import csv
 w = csv.writer(open("./data/info_num.csv", "w"))
 for key, val in info_num.items():
@@ -101,13 +101,17 @@ for key, val in info_char.items():
 
 count = 0
 outlier_dict = {}
+outlier_bool = {}
 for c in summary_num.columns:
     if (summary_num[c][0] > 9990) and (np.absolute(summary_num[c][0]- summary_num[c][5])<= 5) :
        outlier_dict[c] = summary_num[c][[0,5]]
+    if (not np.isnan(summary_num[c][4])) and (summary_num[c][10] == 1):
+       outlier_bool[c] = summary_num[c][[4,9,10]]
 
 outlier_num = pd.DataFrame(outlier_dict)
-outlier_num.to_csv('./data/outlier_list.csv')
-
-
+outlier_num.to_csv('./data/outlier_list.csv', index = False)
+outlier_bool = pd.DataFrame(outlier_bool)
+outlier_bool.to_csv('./data/outlier_bool_list.csv', index = False)
+ 
 
 
