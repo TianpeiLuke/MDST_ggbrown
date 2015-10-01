@@ -68,32 +68,31 @@ for i in rlist:
                            if des_series[3] < org_series[3]:
                                 des_series[3] = org_series[3]
                                 des_series[2] = org_series[2]
-                else: 
-												if len(des_series.dropna(axis=0)) != len(des_series):
-															des_series = {}
-															org_series = {}
-															continue
-												#mean sum
-												des_series[1] = (des_series[1]*des_series[0] + org_series[1]*org_series[0])/(org_series[0]+ des_series[0])
-												#std
-												des_series[2] = np.sqrt((des_series[0]*des_series[2]**2+org_series[0]*org_series[2]**2 )/(org_series[0]+ des_series[0]))
-												#min
-												des_series[3] = np.min([des_series[3], org_series[3]])
-												#average other quantiles
-												des_series[4] = (des_series[4]*des_series[0] + org_series[4]*org_series[0])/(org_series[0]+ des_series[0])
-												des_series[5] = (des_series[5]*des_series[0] + org_series[5]*org_series[0])/(org_series[0]+ des_series[0])
-												des_series[6] = (des_series[6]*des_series[0] + org_series[6]*org_series[0])/(org_series[0]+ des_series[0])
-												#max
-												des_series[7] = np.max([des_series[7], org_series[7]])
-												#count sum
-												des_series[0] = des_series[0] + org_series[0]
-												print(des_series)
-												#store it
-												info_num[c] = des_series
-												des_series = {}
-												org_series = {}
-            
-                
+                else:
+                     if len(des_series.dropna(axis=0)) != len(des_series):
+                           des_series = {}
+                           org_series = {}
+                           continue
+                     #mean sum
+                     des_series[1] = (des_series[1]*des_series[0] + org_series[1]*org_series[0])/(org_series[0]+ des_series[0])
+                     #std
+                     des_series[2] = np.sqrt((des_series[0]*des_series[2]**2+org_series[0]*org_series[2]**2 )/(org_series[0]+ des_series[0]))
+                     #min
+                     des_series[3] = np.min([des_series[3], org_series[3]])
+                     #average other quantiles
+                     des_series[4] = (des_series[4]*des_series[0] + org_series[4]*org_series[0])/(org_series[0]+ des_series[0])
+                     des_series[5] = (des_series[5]*des_series[0] + org_series[5]*org_series[0])/(org_series[0]+ des_series[0])
+                     des_series[6] = (des_series[6]*des_series[0] + org_series[6]*org_series[0])/(org_series[0]+ des_series[0])
+                     #max
+                     des_series[7] = np.max([des_series[7], org_series[7]])
+                     #count sum
+                     des_series[0] = des_series[0] + org_series[0]
+                     print(des_series)
+                     #store it
+                     info_num[c] = des_series
+                     des_series = {}
+                     org_series = {}
+
 # store the numerical data and result
 print("\nConvert summary into csv file...")
 summary_num = pd.DataFrame(info_num)
