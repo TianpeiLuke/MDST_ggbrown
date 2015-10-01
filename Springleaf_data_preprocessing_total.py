@@ -9,8 +9,8 @@ import numpy as np
 from numpy import nan as NA
 from pandas import Series, DataFrame
 import pandas as pd
-import re
-
+#import re
+#import time
 
 # Read training data
 
@@ -20,9 +20,18 @@ nline_trn = 145232
 nline_tst = 145233
 nBatch = 20000
 y_train = np.zeros([nline_trn, 1])
+# read the outlier lists
+outlier_num = pd.read_csv('./data/outlier_list.csv')
+outlier_bool =  pd.read_csv('./data/outlier_bool_list.csv')
+outlier_str = pd.read_csv('./data/outlier_str_list.csv')
+# read the list of time featurs
+time_feature = pd.read_csv('./data/time_col_list.csv')
+
 rlist = range(np.ceil(float(nline_trn)/float(nBatch)).astype(int)) 
 for i in rlist:
 #reading data in batches
+    print "===================================================="
+    print "run %i: Reading..." % i
     if i == 0:
         train = pd.read_csv("./data/train.csv", nrows=nBatch)
     else: 
@@ -36,65 +45,54 @@ for i in rlist:
     print('Column count: %d' % ncols)
 
     print("Row count in total: " +  str(nline_trn)
-           + "; Predictor column count : "+ str(ncols))
+           + "; Current row count : "+ str(i*nBatch + nrows))
 
-# Take a look at the column names
-
-# In[139]:
-
-#train.columns
-
-
-# Drop ID and target
-
-# In[140]:
-# Do not drop target
+    # Drop ID and target
     y_train[i*nBatch:(i*nBatch+np.min([nBatch, nrows])),0] = train['target']
-    train = train.drop(['ID', 'target'], axis=1)
-#train.columns
-    
+    train.drop(['ID', 'target'], axis=1, inplace = True)
 
-# Get row count and column count
+    # Proportio = (81, 82, 74, 65, 64, 1, 2, 3, 4, 5, 6, 7, 13, 14, 15, 16, 32, 33, 34, 35, 36, 37, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57) # white list
+    #black_list = (214, 83, 84, 79, 80, 77, 78, 76, 69, 70, 71, 72, 68, 67, 66, 63, 62, 61, 60, 59, 58, 114, 73, 40, 41, 42, 43, 39, 38, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 21, 20, 19, 18, 17, 8, 9, 10, 11, 12, 75, 44, 404, 305, 283, 222, 202, 204, 216, 217, 466, 467, 493)
+    #black_list += mixed_types
+    print "\nDrop columns with most entities > 9990..."
+    print "Drop columns with identical boolean and string variables "
+    train.drop(outlier_num.columns, axis=1, inplace = True)
+    train.drop(outlier_bool.columns, axis=1, inplace = True)
+    train.drop(outlier_str.columns, axis = 1, inplace = True)
+    print "Column count: %d"  % len(train.columns)
+    #columns = []
+    #black_list_columns = []
+    #for i in range(1,1935):
+       # if i not in black_list:
+       #     columns.append(i)
+        #else:
+           # black_list_columns.append(i)
 
-# In[141]:
+    #columns.sort()
+    #black_list_columns.sort()
+    #columns = [str(n).zfill(4) for n in columns]
+    #columns = ['VAR_' + n for n in columns] 
+    #columns.remove('VAR_0240')
+    #columns.remove('VAR_0218')
+    #columns.append('target')
+    #columns.insert(0,'ID')
 
+    #black_list_columns = [str(n).zfill(4) for n in black_list_columns]
+    #black_list_columns = ['VAR_' + n for n in black_list_columns]  of NA values
 
-# Count total rows in traing data
-
-# In[156]:
-#def countLines(name):
-#    file = open(name)
-#    nline = len(file.readlines())
-#    file.close()
-#    return nline
-#nline = countLines('./data/train.csv')
-
-
-# Proportion of NA values
-
-# In[142]:
-
-#1-sum(train.count(axis=1))/(nrow*ncol)
-
-
-# Check for duplicate rows (there is none)
-
-# In[143]:
-
-#len(train.index) - len((train.drop_duplicates()).index)
+     #len(train.index) - len((train.drop_duplicates()).index)
 
 
 # Look at the columns with only one unique value, drop these columns (there are 2 of them)
 
-# In[144]:
-    print "\nDrop columns with identical entities..."
-    def funct1(df):
-        return len(df.drop_duplicates().index)
-    if i == 0:
-        col_val_count = train.apply(funct1)
-    #col_val_count
-    train = train.drop((col_val_count[col_val_count == 1]).index, axis=1)
-    print "Column count: %d"  % len(train.columns)
+#    print "\nDrop columns with identical entities..."
+#    def funct1(df):
+#        return len(df.drop_duplicates().index)
+#    if i == 0:
+#        col_val_count = train.apply(funct1)
+#    #col_val_count
+#    train = train.drop((col_val_count[col_val_count == 1]).index, axis=1)
+#    print "Column count: %d"  % len(train.columns)
 
 
 # Identify and select numeric and character rows (note the result is different from the Original R script)
@@ -105,63 +103,51 @@ for i in rlist:
     train_char = train.select_dtypes(include=[object])
     print("Numerical column count : "+ str(len(train_num.columns))+ "; Character column count : "+ str(len(train_char.columns)))
 
-
-# Peek into character features
-    print "\n Process the character data"
-# In[178]:
-
-   # def funct2(df):
-   #     return df.drop_duplicates().tolist()
-   # train_char.apply(funct2)
-
-
 # It looks like NA is represented in character columns by -1 or [] or blank values, so convert these to explicit NAs. 
 # Not entirely sure this is the right thing to do as there are real NA values, as well as -1 values already existing, 
 # however it can be tested in predictive performance.
-
-# In[179]:
-    print "\n Replace -1, [], empty as nan"
+    print "Replace -1, [], empty as nan"
     train_char[train_char=="-1"] = NA
     train_char[train_char==""] = NA
     train_char[train_char=="[]"] = NA
 
 
 # We place the date columns in a new dataframe and parse the dates
-
-# In[218]:
-    print "\n Parse the date"
-    def funct3(df):
-        return len(df[df.str.contains(r'JAN1|FEB1|MAR1')==True]) > 0
-    index_date = train_char.apply(funct3)
-    train_date = train_char[index_date.index[index_date]]
-    train_char = train_char.drop(train_date.columns, axis=1)
+    print "Parse the date"
+#    def funct3(df):
+#        return len(df[df.str.contains(r'JAN1|FEB1|MAR1')==True]) > 0
+#    index_date = train_char.apply(funct3)
+#    train_date = train_char[index_date.index[index_date]]
+#    train_char = train_char.drop(train_date.columns, axis=1)
 #    train_date.apply(funct2)
-
+    train_date = train[time_feature.columns]
+    train_char.drop(time_feature.columns, axis = 1, inplace = True)
 
 # Map the date to integer from 1 to 12, which represent months
-
-# In[217]:
-
-    def funct4(s):
-        s[s.str.contains(r'JAN')==True] = 1
-        s[s.str.contains(r'FEB')==True] = 2
-        s[s.str.contains(r'MAR')==True] = 3
-        s[s.str.contains(r'APR')==True] = 4
-        s[s.str.contains(r'MAY')==True] = 5
-        s[s.str.contains(r'JUN')==True] = 6
-        s[s.str.contains(r'JUL')==True] = 7
-        s[s.str.contains(r'AUG')==True] = 8
-        s[s.str.contains(r'SEP')==True] = 9
-        s[s.str.contains(r'OCT')==True] = 10
-        s[s.str.contains(r'NOV')==True] = 11
-        s[s.str.contains(r'DEC')==True] = 12
-    train_date.apply(funct4)
+#    def funct4(s):
+#        s[s.str.contains(r'JAN')==True] = 1
+#        s[s.str.contains(r'FEB')==True] = 2
+#        s[s.str.contains(r'MAR')==True] = 3
+#        s[s.str.contains(r'APR')==True] = 4
+#        s[s.str.contains(r'MAY')==True] = 5
+#        s[s.str.contains(r'JUN')==True] = 6
+#        s[s.str.contains(r'JUL')==True] = 7
+#        s[s.str.contains(r'AUG')==True] = 8
+#        s[s.str.contains(r'SEP')==True] = 9
+#        s[s.str.contains(r'OCT')==True] = 10
+#        s[s.str.contains(r'NOV')==True] = 11
+#        s[s.str.contains(r'DEC')==True] = 12
+#    train_date.apply(funct4)
+    for c in train_date.columns:
+       train_date[c+ 'm']= (pd.to_datetime(train_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: x.month))
+       train_date[c+ 'y']= (pd.to_datetime(train_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: x.year-2010))
+       train_date[c]= (pd.to_datetime(train_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: (x.year-2010)*12+x.month))
    # train_date.apply(funct2)
     #train_date
 
 # In[222]:
 # Maintain the feature ordering
-    print "\n Feature stored back"
+    print "Feature stored back...\n"
     data_cleaned = train
     data_cleaned[train_char.columns.values]= train_char
     data_cleaned[train_num.columns.values]= train_num
