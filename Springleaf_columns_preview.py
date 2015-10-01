@@ -22,9 +22,11 @@ for i in rlist:
                             skiprows= range(1,i*nBatch+1))
 
     nrows = len(train.index)
-    ncols  = len(train.columns)
+    ncols = len(train.columns)
    
     train.drop(['ID', 'target'], axis=1, inplace = True)
+#  for each column, make a summary of elements, stored in info_num, info_char
+
     if i == 0:
         info_num = {}
         info_char = {}
@@ -36,6 +38,11 @@ for i in rlist:
         if len(trn_na) == 0:
            continue
         if not np.isreal(train[c][train[c].first_valid_index()]):
+            train[c][train[c] == "-1"] = NA
+            train[c][train[c] == "[]"] = NA
+            train[c][train[c] == ""] = NA
+            train[c][train[c] == -1] = NA
+            #string elements to find unique strings
             if i == 0:
                info_char[c] = train[c].unique()
                print(j,c, train[c].unique())
@@ -44,7 +51,7 @@ for i in rlist:
                                                train[c].unique()), axis= 0)
                info_char[c] = np.unique(temp_char)
                print(j, c, info_char[c])
-        else:
+        else:  #numerical elements to make summary
              print(j, c, "Numeric")
              if i == 0:
                 print(train[c].describe())
@@ -87,31 +94,90 @@ for i in rlist:
 												org_series = {}
             
                 
-# store the data and result
+# store the numerical data and result
+print("\nConvert summary into csv file...")
 summary_num = pd.DataFrame(info_num)
 summary_num.to_csv('./data/train_num_summary.csv',index = False)
+time_dict = {}
+string_dict = {}
 import csv
+import time
+
+def isTimeFormat(input):
+    try:
+        time.strptime(input, '%d%b%y:%H:%M:%S')
+        return True
+    except ValueError:
+        return False
+
+is_time = 0
 w = csv.writer(open("./data/info_num.csv", "w"))
 for key, val in info_num.items():
     w.writerow([key, val])
 w = csv.writer(open("./data/info_char.csv", "w"))
 for key, val in info_char.items():
+    is_time = 0
+    is_first_nan = 0
     w.writerow([key, val])
-#=================================================================
+    if len(val)>1 and isTimeFormat(val[1]):
+        is_time = 1
+    if np.isreal(val[0]) and np.isnan(val[0]):
+        is_first_nan = 1
+    string_dict[key] = pd.Series([len(val), is_first_nan, is_time], index= ['len(unique)', 'is_first_nan', 'is_time'])
 
+summary_str = pd.DataFrame(string_dict)
+summary_str.to_csv('./data/summary_str.csv', index= False)
+#=================================================================
+#   outlier extraction
+outlier_str_dict = {}
+time_str_dict = {}
+for s in summary_str.columns:
+    if summary_str[s][0] <= 2 and summary_str[s][1] == 1:
+        outlier_str_dict[s] = info_char[s]
+    elif summary_str[s][2] == 1:
+        time_str_dict[s] = summary_str[s]
+outlier_str = pd.DataFrame.from_dict(outlier_str_dict, orient= 'index').T
+outlier_str.to_csv('./data/outlier_str_list.csv', index= False)
+time_str_df = pd.DataFrame(time_str_dict)
+time_str_df.to_csv('./data/time_col_list.csv', index = False)
+
+# numerical values
 count = 0
 outlier_dict = {}
 outlier_bool = {}
+suspect_dict = {}
+'''
+The entities for summary_num
+[0] 25%      quantile
+[1] 50%      median
+[2] 75%      ...
+[3] count    number of elements in count
+[4] freq     for boolean, freq of largest element
+[5] max      maximum element
+[6] mean     mean values 
+[7] min      minimum element
+[8] std      standard deviation
+[9] top      for boolean, most frequent element
+[10] unique  for boolean, number of unique elements
+'''
+print("\nExtract outlier numerical columns")
 for c in summary_num.columns:
-    if (summary_num[c][0] > 9990) and (np.absolute(summary_num[c][0]- summary_num[c][5])<= 5) :
+    cond_large = (summary_num[c][0] > 9990) and (np.absolute(summary_num[c][0]- summary_num[c][5])<= 5) # 25% = max 
+    cond_minus_large = (summary_num[c][2] < -9990) and (np.absolute(summary_num[c][7]- summary_num[c][2])<= 5) # min = 75%
+    cond_identical = (not np.isnan(summary_num[c][4])) and (summary_num[c][10] == 1)
+    cond_large_gap = (np.isnan(summary_num[c][4])) and (abs(summary_num[c][2]/summary_num[c][0]) > 1e3)
+    if cond_large or cond_minus_large:
        outlier_dict[c] = summary_num[c][[0,5]]
-    if (not np.isnan(summary_num[c][4])) and (summary_num[c][10] == 1):
+    if cond_identical:
        outlier_bool[c] = summary_num[c][[4,9,10]]
+    if cond_large_gap:
+       suspect_dict[c] = summary_num[c]
 
 outlier_num = pd.DataFrame(outlier_dict)
 outlier_num.to_csv('./data/outlier_list.csv', index = False)
 outlier_bool = pd.DataFrame(outlier_bool)
 outlier_bool.to_csv('./data/outlier_bool_list.csv', index = False)
- 
+suspect_num = pd.DataFrame(suspect_dict)
+suspect_num.to_csv('./data/large_gap_list.csv', index = False) 
 
 
