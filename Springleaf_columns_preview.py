@@ -162,22 +162,18 @@ The entities for summary_num
 '''
 print("\nExtract outlier numerical columns")
 for c in summary_num.columns:
-    cond_large = (summary_num[c][0] > 9990) and (np.absolute(summary_num[c][0]- summary_num[c][5])<= 5) # 25% = max 
-    cond_minus_large = (summary_num[c][2] < -9990) and (np.absolute(summary_num[c][7]- summary_num[c][2])<= 5) # min = 75%
-    cond_identical = (not np.isnan(summary_num[c][4])) and (summary_num[c][10] == 1)
-    cond_large_gap = (np.isnan(summary_num[c][4])) and (abs(summary_num[c][2]/summary_num[c][0]) > 1e3)
-    if cond_large or cond_minus_large:
-       outlier_dict[c] = summary_num[c][[0,5]]
-    if cond_identical:
+    if (not np.isnan(summary_num[c][4])) and (summary_num[c][10] == 1):
        outlier_bool[c] = summary_num[c][[4,9,10]]
-    if cond_large_gap:
+    if (np.isnan(summary_num[c][4])) and (abs(summary_num[c][2]/summary_num[c][0]) > 1e3):
        suspect_dict[c] = summary_num[c]
+    if (summary_num[c][0] > 9990) and (np.absolute(summary_num[c][0]- summary_num[c][5])<= 5) or ((summary_num[c][2] < -9990) and (np.absolute(summary_num[c][7]- summary_num[c][2])<= 5)):
+       outlier_dict[c] = summary_num[c][[0,5]]
 
 outlier_num = pd.DataFrame(outlier_dict)
 outlier_num.to_csv('./data/outlier_list.csv', index = False)
-outlier_bool = pd.DataFrame(outlier_bool)
-outlier_bool.to_csv('./data/outlier_bool_list.csv', index = False)
+outlier_bool_pd = pd.DataFrame(outlier_bool)
+outlier_bool_pd.to_csv('./data/outlier_bool_list.csv', index = False)
 suspect_num = pd.DataFrame(suspect_dict)
-suspect_num.to_csv('./data/large_gap_list.csv', index = False) 
+suspect_num.to_csv('./data/large_gap_list.csv', index = False)
 
 
