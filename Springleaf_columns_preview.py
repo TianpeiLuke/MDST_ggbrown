@@ -183,7 +183,7 @@ for c in summary_num.columns:
        large_dict[c] = summary_num[c][[0,1,2,5,6,7]] 
     if summary_num[c][2] == summary_num[c][0] and summary_num[c][2] == 0 :
        sparse_dict[c] = summary_num[c][[0,1,2,5,6,7]]
-    if summary_num[c][7] < 0 and summary_num[c][2] > -9990:
+    if summary_num[c][7] < 0 and summary_num[c][7] > -9990:
        negative_dict[c] = summary_num[c][[0,1,2,5,6,7]]
 
 outlier_num = pd.DataFrame(outlier_dict)
