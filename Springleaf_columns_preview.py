@@ -11,6 +11,8 @@ import re
 nline_trn = 145232
 nline_tst = 145233
 nBatch = 20000
+
+ifstore = True
 y_train = np.zeros([nline_trn, 1])
 rlist = range(np.ceil(float(nline_trn)/float(nBatch)).astype(int)) 
 for i in rlist:
@@ -94,9 +96,10 @@ for i in rlist:
                      org_series = {}
 
 # store the numerical data and result
-print("\nConvert summary into csv file...")
 summary_num = pd.DataFrame(info_num)
-summary_num.to_csv('./data/train_num_summary.csv',index = False)
+if ifstore == True:
+    print("\nConvert summary into csv file...")
+    summary_num.to_csv('./data/train_num_summary.csv',index = False)
 time_dict = {}
 string_dict = {}
 import csv
@@ -110,14 +113,17 @@ def isTimeFormat(input):
         return False
 
 is_time = 0
-w = csv.writer(open("./data/info_num.csv", "w"))
-for key, val in info_num.items():
-    w.writerow([key, val])
-w = csv.writer(open("./data/info_char.csv", "w"))
+if ifstore == True:
+  w = csv.writer(open("./data/info_num.csv", "w"))
+  for key, val in info_num.items():
+      w.writerow([key, val])
+if ifstore == True:
+   w = csv.writer(open("./data/info_char.csv", "w"))
 for key, val in info_char.items():
     is_time = 0
     is_first_nan = 0
-    w.writerow([key, val])
+    if ifstore == True:
+       w.writerow([key, val])
     if len(val)>1 and isTimeFormat(val[1]):
         is_time = 1
     if np.isreal(val[0]) and np.isnan(val[0]):
@@ -125,9 +131,12 @@ for key, val in info_char.items():
     string_dict[key] = pd.Series([len(val), is_first_nan, is_time], index= ['len(unique)', 'is_first_nan', 'is_time'])
 
 summary_str = pd.DataFrame(string_dict)
-summary_str.to_csv('./data/summary_str.csv', index= False)
+if ifstore == True:
+    summary_str.to_csv('./data/summary_str.csv', index= False)
 #=================================================================
 #   outlier extraction
+print('Outlier extraction')
+print("Extract outlier string columns and daytime columns")
 outlier_str_dict = {}
 time_str_dict = {}
 for s in summary_str.columns:
@@ -136,15 +145,18 @@ for s in summary_str.columns:
     elif summary_str[s][2] == 1:
         time_str_dict[s] = summary_str[s]
 outlier_str = pd.DataFrame.from_dict(outlier_str_dict, orient= 'index').T
-outlier_str.to_csv('./data/outlier_str_list.csv', index= False)
 time_str_df = pd.DataFrame(time_str_dict)
-time_str_df.to_csv('./data/time_col_list.csv', index = False)
-
+if ifstore == True:
+    time_str_df.to_csv('./data/time_col_list.csv', index = False)
+    outlier_str.to_csv('./data/outlier_str_list.csv', index= False)
 # numerical values
 count = 0
 outlier_dict = {}
 outlier_bool = {}
 suspect_dict = {}
+sparse_dict = {}
+large_dict = {}
+negative_dict = {}
 '''
 The entities for summary_num
 [0] 25%      quantile
@@ -159,20 +171,31 @@ The entities for summary_num
 [9] top      for boolean, most frequent element
 [10] unique  for boolean, number of unique elements
 '''
-print("\nExtract outlier numerical columns")
+print("Extract outlier numerical columns")
 for c in summary_num.columns:
     if (not np.isnan(summary_num[c][4])) and (summary_num[c][10] == 1):
        outlier_bool[c] = summary_num[c][[4,9,10]]
     if (np.isnan(summary_num[c][4])) and (abs(summary_num[c][2]/summary_num[c][0]) > 1e3):
        suspect_dict[c] = summary_num[c]
     if (summary_num[c][0] > 9990) and (np.absolute(summary_num[c][0]- summary_num[c][5])<= 5) or ((summary_num[c][2] < -9990) and (np.absolute(summary_num[c][7]- summary_num[c][2])<= 5)):
-       outlier_dict[c] = summary_num[c][[0,5]]
+       outlier_dict[c] = summary_num[c][[0,5]] 
+    elif np.log10(abs(summary_num[c][5]- summary_num[c][7])) > 5 :
+       large_dict[c] = summary_num[c][[0,1,2,5,6,7]] 
+    if summary_num[c][2] == summary_num[c][0] and summary_num[c][2] == 0 :
+       sparse_dict[c] = summary_num[c][[0,1,2,5,6,7]]
+    if summary_num[c][7] < 0 and summary_num[c][2] > -9990:
+       negative_dict[c] = summary_num[c][[0,1,2,5,6,7]]
 
 outlier_num = pd.DataFrame(outlier_dict)
-outlier_num.to_csv('./data/outlier_list.csv', index = False)
 outlier_bool_pd = pd.DataFrame(outlier_bool)
-outlier_bool_pd.to_csv('./data/outlier_bool_list.csv', index = False)
 suspect_num = pd.DataFrame(suspect_dict)
-suspect_num.to_csv('./data/large_gap_list.csv', index = False)
-
-
+sparse_num = pd.DataFrame(sparse_dict)
+large_num = pd.DataFrame(large_dict)
+negative_num = pd.DataFrame(negative_dict)
+if ifstore == True:
+   outlier_num.to_csv('./data/outlier_list.csv', index = False)
+   outlier_bool_pd.to_csv('./data/outlier_bool_list.csv', index = False)
+   suspect_num.to_csv('./data/large_gap_list.csv', index = False)
+   sparse_num.to_csv('./data/sparse_list.csv', index = False)
+   large_num.to_csv('./data/large_list.csv', index = False)
+   negative_num.to_csv('./data/negative_list.csv', index = False)
