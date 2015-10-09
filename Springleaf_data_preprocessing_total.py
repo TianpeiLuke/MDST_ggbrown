@@ -16,8 +16,8 @@ import pandas as pd
 
 # In[138]:
 
-nline_trn = 145232
-nline_tst = 145233
+nline_trn = 145232 - 1
+nline_tst = 145233 - 1
 nBatch = 20000
 y_train = np.zeros([nline_trn, 1])
 # read the outlier lists
@@ -48,7 +48,12 @@ for i in rlist:
            + "; Current row count : "+ str(i*nBatch + nrows))
 
     # Drop ID and target
-    y_train[i*nBatch:(i*nBatch+np.min([nBatch, nrows])),0] = train['target']
+    y_train[i*nBatch:(i*nBatch+ np.min([nBatch, nrows])),0] = train['target']
+   #     (i+1)*nBatch-1
+   # else: 
+   #     y_train[i*nBatch:i*nBatch+ nrows,0] = train['target']
+   #     i*nBatch+ nrows - 1
+
     train.drop(['ID', 'target'], axis=1, inplace = True)
 
     # Proportio = (81, 82, 74, 65, 64, 1, 2, 3, 4, 5, 6, 7, 13, 14, 15, 16, 32, 33, 34, 35, 36, 37, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57) # white list
