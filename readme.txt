@@ -29,4 +29,8 @@ by Tianpei Xie
    1. Identify the all nan columns in all_nan_summary.csv
    2. Count the top 4 most frequent items in each non-numerical/non-time columns
       stored in train_common_str4.csv
-   3. Identify the items with all items distinct (max freq for each item = 1) in outlier_freq_str.csv 
+   3. Identify the items with all items distinct (max freq for each item = 1) in outlier_freq_str.csv
+   4. Convert the top 4 most frequent items in each string column and stored back; code in 
+      Springleaf_data_preprocessing_trn.py
+   5. Do the same process for test data in Springleaf_data_preprocessing_tst.py
+   6. New train_cleaned.csv and test_cleaned.csv 
