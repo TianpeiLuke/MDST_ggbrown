@@ -20,10 +20,10 @@ all_nan  = pd.read_csv('./data/all_nan_summary.csv')
 outlier_num = pd.read_csv('./data/outlier_list.csv')
 outlier_bool =  pd.read_csv('./data/outlier_bool_list.csv')
 outlier_str = pd.read_csv('./data/outlier_str_list.csv')
-outlie_frq_str = pd.read_csv('./data/outlier_freq_str.csv')
+outlier_frq_str = pd.read_csv('./data/outlier_freq_str.csv')
 # read the list of time featurs
 time_feature = pd.read_csv('./data/time_col_list.csv')
-most_common_str = pd.read_csv('./data/train_common_str4.csv')
+most_common_str= pd.read_csv('./data/train_common_str4.csv')
 
 print "===================================================="
 train = pd.read_csv("./data/train.csv")

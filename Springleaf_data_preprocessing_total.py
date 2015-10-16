@@ -21,11 +21,14 @@ nline_tst = 145233 - 1
 nBatch = 20000
 y_train = np.zeros([nline_trn, 1])
 # read the outlier lists
+all_nan  = pd.read_csv('./data/all_nan_summary.csv')
 outlier_num = pd.read_csv('./data/outlier_list.csv')
 outlier_bool =  pd.read_csv('./data/outlier_bool_list.csv')
 outlier_str = pd.read_csv('./data/outlier_str_list.csv')
+outlier_frq_str = pd.read_csv('./data/outlier_freq_str.csv')
 # read the list of time featurs
 time_feature = pd.read_csv('./data/time_col_list.csv')
+most_common_str= pd.read_csv('./data/train_common_str4.csv')
 
 rlist = range(np.ceil(float(nline_trn)/float(nBatch)).astype(int)) 
 for i in rlist:
@@ -61,9 +64,11 @@ for i in rlist:
     #black_list += mixed_types
     print "\nDrop columns with most entities > 9990..."
     print "Drop columns with identical boolean and string variables "
+    train.drop(all_nan.columns, axis = 1, inplace = True)
     train.drop(outlier_num.columns, axis=1, inplace = True)
     train.drop(outlier_bool.columns, axis=1, inplace = True)
     train.drop(outlier_str.columns, axis = 1, inplace = True)
+    train.drop(outlier_frq_str.columns, axis = 1, inplace = True)
     print "Column count: %d"  % len(train.columns)
     #columns = []
     #black_list_columns = []
