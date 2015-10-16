@@ -192,8 +192,8 @@ for j, c in enumerate(train):
                if list_tuple[0][1] == 1:
                      #record the columns in which each item only occur once
                      string_freq_outlier[c] = np.array(type_list, dtype = object)
-
-               info_count_str[c] = np.array(type_list, dtype = object)
+               else:      
+                     info_count_str[c] = np.array(type_list, dtype = object)
                list_tuple = []
 
 str_freq_outlier_pd = pd.DataFrame(string_freq_outlier)
