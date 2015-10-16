@@ -52,10 +52,6 @@ for i in rlist:
 
     # Drop ID and target
     y_train[i*nBatch:(i*nBatch+ np.min([nBatch, nrows])),0] = train['target']
-   #     (i+1)*nBatch-1
-   # else: 
-   #     y_train[i*nBatch:i*nBatch+ nrows,0] = train['target']
-   #     i*nBatch+ nrows - 1
 
     train.drop(['ID', 'target'], axis=1, inplace = True)
 
@@ -70,45 +66,11 @@ for i in rlist:
     train.drop(outlier_str.columns, axis = 1, inplace = True)
     train.drop(outlier_frq_str.columns, axis = 1, inplace = True)
     print "Column count: %d"  % len(train.columns)
-    #columns = []
-    #black_list_columns = []
-    #for i in range(1,1935):
-       # if i not in black_list:
-       #     columns.append(i)
-        #else:
-           # black_list_columns.append(i)
-
-    #columns.sort()
-    #black_list_columns.sort()
-    #columns = [str(n).zfill(4) for n in columns]
-    #columns = ['VAR_' + n for n in columns] 
-    #columns.remove('VAR_0240')
-    #columns.remove('VAR_0218')
-    #columns.append('target')
-    #columns.insert(0,'ID')
-
     #black_list_columns = [str(n).zfill(4) for n in black_list_columns]
     #black_list_columns = ['VAR_' + n for n in black_list_columns]  of NA values
 
-     #len(train.index) - len((train.drop_duplicates()).index)
 
 
-# Look at the columns with only one unique value, drop these columns (there are 2 of them)
-
-#    print "\nDrop columns with identical entities..."
-#    def funct1(df):
-#        return len(df.drop_duplicates().index)
-#    if i == 0:
-#        col_val_count = train.apply(funct1)
-#    #col_val_count
-#    train = train.drop((col_val_count[col_val_count == 1]).index, axis=1)
-#    print "Column count: %d"  % len(train.columns)
-
-
-# Identify and select numeric and character rows (note the result is different from the Original R script)
-
-# In[147]:
-    # NAN in "VAR_0214"
     train_num = train.select_dtypes(include=[np.number])
     train_char = train.select_dtypes(include=[object])
     print("Numerical column count : "+ str(len(train_num.columns))+ "; Character column count : "+ str(len(train_char.columns)))
@@ -124,36 +86,13 @@ for i in rlist:
 
 # We place the date columns in a new dataframe and parse the dates
     print "Parse the date"
-#    def funct3(df):
-#        return len(df[df.str.contains(r'JAN1|FEB1|MAR1')==True]) > 0
-#    index_date = train_char.apply(funct3)
-#    train_date = train_char[index_date.index[index_date]]
-#    train_char = train_char.drop(train_date.columns, axis=1)
-#    train_date.apply(funct2)
     train_date = train[time_feature.columns]
     train_char.drop(time_feature.columns, axis = 1, inplace = True)
 
-# Map the date to integer from 1 to 12, which represent months
-#    def funct4(s):
-#        s[s.str.contains(r'JAN')==True] = 1
-#        s[s.str.contains(r'FEB')==True] = 2
-#        s[s.str.contains(r'MAR')==True] = 3
-#        s[s.str.contains(r'APR')==True] = 4
-#        s[s.str.contains(r'MAY')==True] = 5
-#        s[s.str.contains(r'JUN')==True] = 6
-#        s[s.str.contains(r'JUL')==True] = 7
-#        s[s.str.contains(r'AUG')==True] = 8
-#        s[s.str.contains(r'SEP')==True] = 9
-#        s[s.str.contains(r'OCT')==True] = 10
-#        s[s.str.contains(r'NOV')==True] = 11
-#        s[s.str.contains(r'DEC')==True] = 12
-#    train_date.apply(funct4)
     for c in train_date.columns:
        train_date[c+ 'm']= (pd.to_datetime(train_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: x.month))
        train_date[c+ 'y']= (pd.to_datetime(train_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: x.year-2010))
        train_date[c]= (pd.to_datetime(train_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: (x.year-2010)*12+x.month))
-   # train_date.apply(funct2)
-    #train_date
 
 # In[222]:
 # Maintain the feature ordering
