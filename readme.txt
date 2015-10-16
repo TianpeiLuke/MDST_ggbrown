@@ -23,3 +23,10 @@ by Tianpei Xie
    5. Change the Springleaf_data_preprocessing_total.py. It now encodes the day/month/year/time into three different features: ‘orgname’ = (year-2010)*12+ month, and ‘orgname’+y = year-2010; and ‘orgname’+ month = month
     
     see https://github.com/TianpeiLuke/MDST_ggbrown/tree/master/data
+
+
+10-16-2015
+   1. Identify the all nan columns in all_nan_summary.csv
+   2. Count the top 4 most frequent items in each non-numerical/non-time columns
+      stored in train_common_str4.csv
+   3. Identify the items with all items distinct (max freq for each item = 1) in outlier_freq_str.csv 
