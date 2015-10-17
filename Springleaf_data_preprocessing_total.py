@@ -9,6 +9,8 @@ import numpy as np
 from numpy import nan as NA
 from pandas import Series, DataFrame
 import pandas as pd
+from sklearn import preprocessing
+
 #import re
 #import time
 
@@ -84,11 +86,34 @@ for i in rlist:
     train_char[train_char=="[]"] = NA
 
 
-# We place the date columns in a new dataframe and parse the dates
     print "Parse the date"
     train_date = train[time_feature.columns]
     train_char.drop(time_feature.columns, axis = 1, inplace = True)
+    
+    print "Convert Boolean columns"
+    list_diff = np.setdiff1d(train_char.columns, most_common_str.columns)    
+    #boolen columns
+    train_bool = train[list_diff]
+    le = preprocessing.LabelEncoder()
+    for c in list_diff:
+       le.fit(train[c])
+       train_bool.loc[:,c] = le.transform(train[c])
 
+    print "Convert top 4 frequent string into indicator variables"
+    train_dummy = train_char[most_common_str.columns]
+    for c in most_common_str.columns:
+        unique_list = most_common_str[c].dropna(axis = 0)
+        temp = train_dummy[c]
+        temp2 = temp.loc[~temp.isin(unique_list)]
+        if len(temp2)> 0:
+             train_dummy.loc[~temp.isin(unique_list),c] = NA
+             temp_dummies = pd.get_dummies(train_dummy[c])
+             train_dummy[c] = temp_dummies[unique_list[0]]
+        for mm in np.arange(len(unique_list)):
+             if mm > 0:
+                  train_dummy[c+ '_'+str(mm)] = temp_dummies[unique_list[mm]]
+
+# We place the date columns in a new dataframe and parse the dates
     for c in train_date.columns:
        train_date[c+ 'm']= (pd.to_datetime(train_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: x.month))
        train_date[c+ 'y']= (pd.to_datetime(train_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: x.year-2010))
@@ -98,9 +123,12 @@ for i in rlist:
 # Maintain the feature ordering
     print "Feature stored back...\n"
     data_cleaned = train
-    data_cleaned[train_char.columns.values]= train_char
+    data_cleaned[list_diff] = train_bool
+#    data_cleaned[train_char.columns.values]= train_char
     data_cleaned[train_num.columns.values]= train_num
     data_cleaned[train_date.columns.values]= train_date
+    data_cleaned[train_dummy.columns.values]  = train_dummy
+    print("num of row: %d, num of col: %d" % (len(data_cleaned.index), len(data_cleaned.columns)))
     if i== 0:
         data_cleaned.to_csv('./data/train_cleaned.csv', index = False)
     else:
