@@ -53,3 +53,8 @@ by Tianpei Xie
       Springleaf_data_preprocessing_trn.py
    5. Do the same process for test data in Springleaf_data_preprocessing_tst.py
    6. New train_cleaned.csv and test_cleaned.csv 
+
+10-17－2015
+   1. program for xgboost training with parameter given by Xiyu
+   2. R-script in ./src  and Python-script in Springleaf_model_construction.py
+   
