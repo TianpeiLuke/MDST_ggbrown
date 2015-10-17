@@ -24,6 +24,25 @@ by Tianpei Xie
     
     see https://github.com/TianpeiLuke/MDST_ggbrown/tree/master/data
 
+10-04-2015
+   To do list: 
+   1. Change -1 to NA in train data (lots of them) (Tianpei)
+   2. Columns with 1e9 (to NA or log) (Tianpei)
+   3. Tune boosting parameters (Xiang)
+   4. Bootstrap aggregation (randomly sample data) (Xinyu)
+   5. Write xgboost in Python (Tianpei)
+
+10-08-2015
+   Progress meeting
+   1. log transformation of data didn’t work
+   2. NaN transformed to -99999 is working (transformed to mean didn’t work)
+
+10-09-2015 
+   To-do list
+   1. parameter tuning
+   2. feature selection
+   3. debug (target has 1 more column than train)
+
 
 10-16-2015
    1. Identify the all nan columns in all_nan_summary.csv
