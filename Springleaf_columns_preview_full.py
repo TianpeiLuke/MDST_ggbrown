@@ -116,21 +116,21 @@ for j, c in enumerate(train):
 all_nan_frame = pd.DataFrame(all_nan)
 if ifstore == True:
     print("\nnum of nan columns: %d" % len(all_nan.keys()))
-    all_nan_frame.to_csv('./data/all_nan_summary.csv', index= False)
+    all_nan_frame.to_csv('./data/list_all_nan.csv', index= False)
 summary_num = pd.DataFrame(info_num)
 if ifstore == True:
     print("\nConvert summary into csv file...")
-    summary_num.to_csv('./data/train_num_summary.csv', index = False)
+    summary_num.to_csv('./data/list_summary_num.csv', index = False)
 time_dict = {}
 string_dict = {}
 
 is_time = 0
 if ifstore == True:
-  w = csv.writer(open("./data/info_num.csv", "w"))
+  w = csv.writer(open("./data/dict_info_num.csv", "w"))
   for key, val in info_num.items():
       w.writerow([key, val])
 if ifstore == True:
-   w = csv.writer(open("./data/info_char.csv", "w"))
+   w = csv.writer(open("./data/dict_info_char.csv", "w"))
 for key, val in info_char.items():
     is_time = 0
     is_first_nan = 0
@@ -148,7 +148,7 @@ for key, val in info_char.items():
 
 summary_str = pd.DataFrame(string_dict)
 if ifstore == True:
-    summary_str.to_csv('./data/summary_str.csv', index= False)
+    summary_str.to_csv('./data/list_summary_str.csv', index= False)
 #=================================================================
 #   outlier extraction
 print('Outlier extraction')
@@ -163,8 +163,8 @@ for s in summary_str.columns:
 outlier_str = pd.DataFrame.from_dict(outlier_str_dict, orient= 'index').T
 time_str_df = pd.DataFrame(time_str_dict)
 if ifstore == True:
-    time_str_df.to_csv('./data/time_col_list.csv', index = False)
-    outlier_str.to_csv('./data/outlier_str_list.csv', index= False)
+    time_str_df.to_csv('./data/list_time.csv', index = False)
+    outlier_str.to_csv('./data/outlier_str.csv', index= False)
 
 #frequency count
 string_freq_outlier = {}
@@ -200,7 +200,7 @@ str_freq_outlier_pd = pd.DataFrame(string_freq_outlier)
 summary_str_com = pd.DataFrame(info_count_str)
 print('num column with max frequency 1: %d' % len(str_freq_outlier_pd.columns))
 if ifstore == True:
-    summary_str_com.to_csv('./data/train_common_str4.csv', index = False)    
+    summary_str_com.to_csv('./data/list_common_str4.csv', index = False)    
     str_freq_outlier_pd.to_csv('./data/outlier_freq_str.csv', index= False)
 
 
@@ -250,9 +250,9 @@ large_num = pd.DataFrame(large_dict)
 negative_num = pd.DataFrame(negative_dict)
 if ifstore == True:
    print('Store back...')
-   outlier_num.to_csv('./data/outlier_list.csv', index = False)
-   outlier_bool_pd.to_csv('./data/outlier_bool_list.csv', index = False)
-   suspect_num.to_csv('./data/large_gap_list.csv', index = False)
-   sparse_num.to_csv('./data/sparse_list.csv', index = False)
-   large_num.to_csv('./data/large_list.csv', index = False)
-   negative_num.to_csv('./data/negative_list.csv', index = False)
+   outlier_num.to_csv('./data/outlier_num.csv', index = False)
+   outlier_bool_pd.to_csv('./data/outlier_bool.csv', index = False)
+   suspect_num.to_csv('./data/list_large_gap.csv', index = False)
+   sparse_num.to_csv('./data/list_sparse.csv', index = False)
+   large_num.to_csv('./data/list_large_item.csv', index = False)
+   negative_num.to_csv('./data/list_negative.csv', index = False)

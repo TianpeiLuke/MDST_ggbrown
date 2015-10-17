@@ -99,7 +99,7 @@ for i in rlist:
 summary_num = pd.DataFrame(info_num)
 if ifstore == True:
     print("\nConvert summary into csv file...")
-    summary_num.to_csv('./data/train_num_summary.csv',index = False)
+    summary_num.to_csv('./data/list_summary_num.csv',index = False)
 time_dict = {}
 string_dict = {}
 import csv
@@ -114,11 +114,11 @@ def isTimeFormat(input):
 
 is_time = 0
 if ifstore == True:
-  w = csv.writer(open("./data/info_num.csv", "w"))
+  w = csv.writer(open("./data/dict_info_num.csv", "w"))
   for key, val in info_num.items():
       w.writerow([key, val])
 if ifstore == True:
-   w = csv.writer(open("./data/info_char.csv", "w"))
+   w = csv.writer(open("./data/dict_info_char.csv", "w"))
 for key, val in info_char.items():
     is_time = 0
     is_first_nan = 0
@@ -132,7 +132,7 @@ for key, val in info_char.items():
 
 summary_str = pd.DataFrame(string_dict)
 if ifstore == True:
-    summary_str.to_csv('./data/summary_str.csv', index= False)
+    summary_str.to_csv('./data/list_summary_str.csv', index= False)
 #=================================================================
 #   outlier extraction
 print('Outlier extraction')
@@ -147,8 +147,8 @@ for s in summary_str.columns:
 outlier_str = pd.DataFrame.from_dict(outlier_str_dict, orient= 'index').T
 time_str_df = pd.DataFrame(time_str_dict)
 if ifstore == True:
-    time_str_df.to_csv('./data/time_col_list.csv', index = False)
-    outlier_str.to_csv('./data/outlier_str_list.csv', index= False)
+    time_str_df.to_csv('./data/list_time_col.csv', index = False)
+    outlier_str.to_csv('./data/outlier_str.csv', index= False)
 # numerical values
 count = 0
 outlier_dict = {}
@@ -193,9 +193,9 @@ sparse_num = pd.DataFrame(sparse_dict)
 large_num = pd.DataFrame(large_dict)
 negative_num = pd.DataFrame(negative_dict)
 if ifstore == True:
-   outlier_num.to_csv('./data/outlier_list.csv', index = False)
-   outlier_bool_pd.to_csv('./data/outlier_bool_list.csv', index = False)
-   suspect_num.to_csv('./data/large_gap_list.csv', index = False)
-   sparse_num.to_csv('./data/sparse_list.csv', index = False)
-   large_num.to_csv('./data/large_list.csv', index = False)
-   negative_num.to_csv('./data/negative_list.csv', index = False)
+   outlier_num.to_csv('./data/outlier_num.csv', index = False)
+   outlier_bool_pd.to_csv('./data/outlier_bool.csv', index = False)
+   suspect_num.to_csv('./data/list_large_gap.csv', index = False)
+   sparse_num.to_csv('./data/list_sparse.csv', index = False)
+   large_num.to_csv('./data/list_large_item.csv', index = False)
+   negative_num.to_csv('./data/list_negative.csv', index = False)

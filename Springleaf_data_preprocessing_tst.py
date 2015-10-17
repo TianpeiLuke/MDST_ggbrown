@@ -15,15 +15,17 @@ nline_trn = 145232 - 1
 nline_tst = 145233 - 1
 nBatch = 20000
 #y_tst = np.zeros([nline_tst, 1])
+
 # read the outlier lists
-all_nan  = pd.read_csv('./data/all_nan_summary.csv')
-outlier_num = pd.read_csv('./data/outlier_list.csv')
-outlier_bool =  pd.read_csv('./data/outlier_bool_list.csv')
-outlier_str = pd.read_csv('./data/outlier_str_list.csv')
+all_nan  = pd.read_csv('./data/list_all_nan.csv')
+outlier_num = pd.read_csv('./data/outlier_num.csv')
+outlier_bool =  pd.read_csv('./data/outlier_bool.csv')
+outlier_str = pd.read_csv('./data/outlier_str.csv')
 outlier_frq_str = pd.read_csv('./data/outlier_freq_str.csv')
 # read the list of time featurs
-time_feature = pd.read_csv('./data/time_col_list.csv')
-most_common_str= pd.read_csv('./data/train_common_str4.csv')
+time_feature = pd.read_csv('./data/list_time.csv')
+most_common_str= pd.read_csv('./data/list_common_str4.csv')
+
 
 print "===================================================="
 test = pd.read_csv("./data/test.csv")
