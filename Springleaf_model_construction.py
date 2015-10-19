@@ -53,6 +53,7 @@ preds = bst.predict(dtest)
 
 # save model
 bst.save_model('./model/xgb.model')
+bst.dump_model('./model/xgb_raw.txt')
  # save dmatrix into binary buffer
 dtest.save_binary('./model/dtest.buffer')
 dtrain.save_binary('./model/dtrain.buffer')
