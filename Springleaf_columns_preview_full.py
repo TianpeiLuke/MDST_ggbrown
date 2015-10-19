@@ -63,55 +63,13 @@ for j, c in enumerate(train):
            all_nan[c] = train[c].unique()
        else:
            info_char[c] = sorted(train[c].unique())
-       #find the 1-4th most common strings
+       #find all unique strings
            print(j,c, train[c].unique())
-#            else:
-#               temp_char = np.concatenate((info_char[c],
-#                                               train[c].unique()), axis= 0)
-#               info_char[c] = np.unique(temp_char)
-#               print(j, c, info_char[c])
     else:  #numerical elements to make summary
         print(j, c, "Numeric")
-#       if i == 0:
         print(train[c].describe())
         info_num[c] = train[c].describe()
- #      else: 
- #           des_series = train[c].describe()
- #           org_series = info_num[c]
- #           if len(train[c].describe()) == 4: #train[c][0] == False or train[c][0] == True:
-              #count sum
-#                des_series[0] = des_series[0] + org_series[0]
-#                des_series[1] = np.max([des_series[1], org_series[1]])
-              #count most freq items
-#                if des_series[2] != org_series[2]:
-#                    if des_series[3] < org_series[3]:
-#                       des_series[3] = org_series[3]
-#                       des_series[2] = org_series[2]
-#                else:
-#                     if len(des_series.dropna(axis=0)) != len(des_series):
-#                           des_series = {}
-#                           org_series = {}
-#                           continue
-#                     #mean sum
-#                     des_series[1] = (des_series[1]*des_series[0] + org_series[1]*org_series[0])/(org_series[0]+ des_series[0])
-#                     #std
-#                     des_series[2] = np.sqrt((des_series[0]*des_series[2]**2+org_series[0]*org_series[2]**2 )/(org_series[0]+ des_series[0]))
-#                     #min
-#                     des_series[3] = np.min([des_series[3], org_series[3]])
-#                     #average other quantiles
-#                     des_series[4] = (des_series[4]*des_series[0] + org_series[4]*org_series[0])/(org_series[0]+ des_series[0])
-#                     des_series[5] = (des_series[5]*des_series[0] + org_series[5]*org_series[0])/(org_series[0]+ des_series[0])
-#                     des_series[6] = (des_series[6]*des_series[0] + org_series[6]*org_series[0])/(org_series[0]+ des_series[0])
-#                     #max
-#                     des_series[7] = np.max([des_series[7], org_series[7]])
-#                     #count sum
-#                     des_series[0] = des_series[0] + org_series[0]
-#                     print(des_series)
-#                     #store it
-#                     info_num[c] = des_series
-#                     des_series = {}
-#                     org_series = {}
-#
+
 # store the numerical data and result
 all_nan_frame = pd.DataFrame(all_nan)
 if ifstore == True:
@@ -136,11 +94,10 @@ for key, val in info_char.items():
     is_first_nan = 0
     if ifstore == True:
        w.writerow([key, val])
-   # if len(val)>1 and isTimeFormat(val[1]):
-   #     is_time = 1
     if np.isreal(val[0]) and np.isnan(val[0]):
         is_first_nan = 1
         if len(val)>1 and is_first_nan == 0 and isTimeFormat(val[0]):
+          #identify the time columns
            is_time = 1
         elif len(val)>1 and is_first_nan == 1 and isTimeFormat(val[1]):
            is_time = 1
@@ -157,8 +114,10 @@ outlier_str_dict = {}
 time_str_dict = {}
 for s in summary_str.columns:
     if summary_str[s][0] <= 2 and summary_str[s][1] == 1:
+    # unique strings == 1, 
         outlier_str_dict[s] = info_char[s]
     elif summary_str[s][2] == 1:
+    # is time 
         time_str_dict[s] = summary_str[s]
 outlier_str = pd.DataFrame.from_dict(outlier_str_dict, orient= 'index').T
 time_str_df = pd.DataFrame(time_str_dict)
@@ -169,6 +128,8 @@ if ifstore == True:
 #frequency count
 string_freq_outlier = {}
 list_tuple = []
+top_com_threa = 4
+
 print('Count frequency')
 for j, c in enumerate(train):
     if c in outlier_str.columns: #skip those only occur once
@@ -179,15 +140,16 @@ for j, c in enumerate(train):
        train[c][train[c] == "[]"] = NA
        train[c][train[c] == ""] = NA
        train[c][train[c] == -1] = NA
-            #string elements to find unique strings
-#            if i == 0:
+       #not count NA
        trn_na_more = train[c].dropna(axis = 0)
        if len(trn_na_more) > 0:
-           if isTimeFormat(train[c][train[c].first_valid_index()]) == False: 
+           if isTimeFormat(train[c][train[c].first_valid_index()]) == False:
+               # use counter object
                print('Contruct counter for %s ...' % c)
                counter = Counter(train[c].dropna(axis= 0))
-               list_tuple = counter.most_common(np.min([len(train[c].dropna(axis = 0).unique()), 4]))
-               type_list = [NA, NA, NA, NA]
+               # find the top top_com_threa most common 
+               list_tuple = counter.most_common(np.min([len(train[c].dropna(axis = 0).unique()), top_com_threa]))
+               type_list = [NA]*top_com_threa
                type_list[:len(list_tuple)]= [T[0] for T in list_tuple]
                if list_tuple[0][1] == 1:
                      #record the columns in which each item only occur once
@@ -230,16 +192,22 @@ The entities for summary_num
 print("Extract outlier numerical columns")
 for c in summary_num.columns:
     if (not np.isnan(summary_num[c][4])) and (summary_num[c][10] == 1):
+       #find boolean columns with only one unique value 
        outlier_bool[c] = summary_num[c][[4,9,10]]
     if (np.isnan(summary_num[c][4])) and (abs(summary_num[c][2]/summary_num[c][0]) > 1e3):
+       #not boolean, but 75%/25% > 1e3, too large gap
        suspect_dict[c] = summary_num[c]
     if (summary_num[c][0] > 9990) and (np.absolute(summary_num[c][0]- summary_num[c][5])<= 5) or ((summary_num[c][2] < -9990) and (np.absolute(summary_num[c][7]- summary_num[c][2])<= 5)):
+       # columns with a majority of extreme values
        outlier_dict[c] = summary_num[c][[0,5]] 
     elif np.log10(abs(summary_num[c][5]- summary_num[c][7])) > 5 :
+       # max/min > 1e5
        large_dict[c] = summary_num[c][[0,1,2,5,6,7]] 
     if summary_num[c][2] == summary_num[c][0] and summary_num[c][2] == 0 :
+       # columns with a majority of zero entries
        sparse_dict[c] = summary_num[c][[0,1,2,5,6,7]]
     if summary_num[c][7] < 0 and summary_num[c][7] > -9990:
+       # minimal value negative but not extreme
        negative_dict[c] = summary_num[c][[0,1,2,5,6,7]]
 
 outlier_num = pd.DataFrame(outlier_dict)
