@@ -17,14 +17,9 @@ y_train = Y.values # read training labels
 print('Loading train and test data from csv file...')
 Xtrain = pd.read_csv("./data/train_cleaned.csv")
 Xtest = pd.read_csv("./data/test_cleaned.csv")
-#Xtrain.drop(['ID'], axis= 1, inplace = True)
+
 ID = Xtest['ID']
 Xtest.drop(['ID'], axis = 1, inplace = True)
-#    else: 
-#        train = pd.read_csv("./data/train_cleaned.csv", nrows=nBatch,
-#                            skiprows= range(1,i*nBatch+1))
-
-# split data
 print('Splitting data ...')
 Xtrain_c, Xeval, Ytrain_c, Yeval = train_test_split(Xtrain.values, y_train, test_size = 0.3)
 
@@ -32,8 +27,6 @@ print('Loading train and test data into sparse matrix...')
 # load it into xgboost sparse matrix
 dtrain = xgb.DMatrix(data = Xtrain_c, missing = NA, label = Ytrain_c)
 deval = xgb.DMatrix(data = Xeval, missing = NA, label = Yeval)
-
-
 dtest = xgb.DMatrix(data = Xtest.values, missing= NA)  
 
 print('Specifying parameters ...')
@@ -57,15 +50,13 @@ bst = xgb.train(param, dtrain, num_round, watchlist)
 # this is prediction
 print('Prediction ...')
 preds = bst.predict(dtest)
-#print ('error=%f' % ( sum(1 for i in range(len(preds)) if int(preds[i]>0.5)!=labels[i]) /float(len(preds))))
 
 # save model
 bst.save_model('./model/xgb.model')
-# dump model
-bst.dump_model('./model/dump.raw.txt')
- 
  # save dmatrix into binary buffer
 dtest.save_binary('./model/dtest.buffer')
+dtrain.save_binary('./model/dtrain.buffer')
+deval.save_binary('./model/deval.buffer')
 
 submission = pd.DataFrame(data = preds, index = ID, columns = ['target'] )
 print("Save to submission file")

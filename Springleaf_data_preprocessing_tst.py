@@ -3,7 +3,7 @@
 # Python script for Springleaf data preprocessing
 # https://www.kaggle.com/c/springleaf-marketing-response
 # modify to load the whole data
-# In[137]:
+# This is for the test file
 
 import numpy as np
 from numpy import nan as NA
@@ -14,7 +14,6 @@ from sklearn import preprocessing
 nline_trn = 145232 - 1
 nline_tst = 145233 - 1
 nBatch = 20000
-#y_tst = np.zeros([nline_tst, 1])
 
 # read the outlier lists
 all_nan  = pd.read_csv('./data/list_all_nan.csv')
@@ -36,9 +35,7 @@ ncols  = len(test.columns)
 print('Row count: %d' % nrows)
 print('Column count: %d' % ncols)
 print("Row count in total: " +  str(nline_tst))
-
-#y_tst = test['target']
-#test.drop(['ID', 'target'], axis=1, inplace = True)
+# no label to read
 
 
 print "\nDrop all nan columns..." 
@@ -60,7 +57,7 @@ test_char[test_char=="-1"] = NA
 test_char[test_char==""] = NA
 test_char[test_char=="[]"] = NA
 
-# We place the date columns in a new dataframe and parse the dates
+# Parse the dates, same as _trn.py version
 print "Parse the date"
 test_date = test[time_feature.columns]
 test_char.drop(time_feature.columns, axis = 1, inplace = True)
@@ -70,6 +67,7 @@ for c in test_date.columns:
        test_date[c+ 'y']= (pd.to_datetime(test_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: x.year-2010))
        test_date[c]= (pd.to_datetime(test_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: (x.year-2010)*12+x.month))
 
+# Convert the categorical data, same as _trn.py verison
 print "Convert Boolean columns"
 list_diff = np.setdiff1d(test_char.columns, most_common_str.columns)
 #boolen columns
@@ -97,16 +95,12 @@ for c in most_common_str.columns:
 print "Feature stored back...\n"
 data_cleaned = test
 data_cleaned[list_diff] = test_bool
-#data_cleaned[test_char.columns.values]= test_char
 data_cleaned[test_num.columns.values] = test_num
 data_cleaned[test_date.columns.values] = test_date
 data_cleaned[test_dummy.columns.values]  = test_dummy
 print("num of row: %d, num of col: %d" % (len(data_cleaned.index), len(data_cleaned.columns)))
 data_cleaned.to_csv('./data/test_cleaned.csv', index = False)
 
-#Y = pd.DataFrame(y_test)
-#Y.columns = ['Target']
-#Y.to_csv('./data/test_label.csv', index= False)
 #===================================================================
 
 

@@ -3,7 +3,6 @@
 # Python script for Springleaf data preprocessing
 # https://www.kaggle.com/c/springleaf-marketing-response
 # modify to load the whole data
-# In[137]:
 
 import numpy as np
 from numpy import nan as NA
@@ -59,7 +58,7 @@ train_char[train_char=="-1"] = NA
 train_char[train_char==""] = NA
 train_char[train_char=="[]"] = NA
 
-# We place the date columns in a new dataframe and parse the dates
+# Parse the dates into months, years, years+ months
 print "Parse the date"
 train_date = train[time_feature.columns]
 train_char.drop(time_feature.columns, axis = 1, inplace = True)
@@ -69,11 +68,12 @@ for c in train_date.columns:
        train_date[c+ 'y']= (pd.to_datetime(train_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: x.year-2010))
        train_date[c]= (pd.to_datetime(train_date[c],format ='%d%b%y:%H:%M:%S').map(lambda x: (x.year-2010)*12+x.month))
 
+# Convert the categorical data into numerical data
 print "Convert Boolean columns"
 list_diff = np.setdiff1d(train_char.columns, most_common_str.columns)
-#boolen columns
+#boolen columns as the set difference (all char columns) - (string columnsi)
 train_bool = train[list_diff]
-le = preprocessing.LabelEncoder()
+le = preprocessing.LabelEncoder() #label encoder as 0,1
 for c in list_diff:
    le.fit(train[c])
    train_bool.loc[:,c] = le.transform(train[c])
