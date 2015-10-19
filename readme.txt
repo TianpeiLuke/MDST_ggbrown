@@ -64,8 +64,8 @@ by Tianpei Xie
 
 10-19-2015
    1. The file descriptions are as follows:
-      1) Run Springleaf_columns_preview_full.py for raw data if you need to capture more summary of data; It generates aux. csv. file in ./data/
+      1) Run Springleaf_columns_preview_full.py for raw data if you need to capture more statistics of data; It generates csv. file that summaries data in ./data/
       2) Springleaf_columns_preview.py is for small memory machine, as it load data sequentially
-      3) Given all aux file in ./data/, run Springleaf_data_preprocessing_trn.py for training preprocessing, and Springleaf_data_preprocessing_tst.py for test preprocessing.
+      3) Given all csv. file in ./data/, run Springleaf_data_preprocessing_trn.py for training preprocessing, and Springleaf_data_preprocessing_tst.py for test preprocessing.
       4) Springleaf_data_preprocessing_total.py do the same thing for training data in sequential manner
       5) After running the Springleaf_data__preprocesing_*.py file, run Springleaf_model_construction.py to learn and predict on test samples, and save to submission file
