@@ -20,6 +20,7 @@ outlier_num = pd.read_csv('./data/outlier_num.csv')
 outlier_bool =  pd.read_csv('./data/outlier_bool.csv')
 outlier_str = pd.read_csv('./data/outlier_str.csv')
 outlier_frq_str = pd.read_csv('./data/outlier_freq_str.csv')
+outlier_sparse = pd.read_csv('./data/outlier_sparse.csv')
 # read the list of time featurs
 time_feature = pd.read_csv('./data/list_time.csv')
 most_common_str= pd.read_csv('./data/list_common_str4.csv')
@@ -44,6 +45,7 @@ print "Drop columns with most entities > 9990..."
 print "Drop columns with identical boolean and string variables "
 train.drop(all_nan.columns, axis = 1, inplace = True)
 train.drop(outlier_num.columns, axis=1, inplace = True)
+train.drop(outlier_sparse.columns, axis= 1, inplace = True)
 train.drop(outlier_bool.columns, axis=1, inplace = True)
 train.drop(outlier_str.columns, axis = 1, inplace = True)
 train.drop(outlier_frq_str.columns, axis = 1, inplace = True)

@@ -161,6 +161,7 @@ if ifstore == True:
 count = 0
 outlier_dict = {}
 outlier_bool = {}
+outlier_sparse = {}
 suspect_dict = {}
 sparse_dict = {}
 large_dict = {}
@@ -199,9 +200,13 @@ for c in summary_num.columns:
     if summary_num[c][7] < 0 and summary_num[c][7] > -9990:
        # minimal value negative but not extreme
        negative_dict[c] = summary_num[c][[0,1,2,5,6,7]]
+    if summary_num[c][7] == summary_num[c][5] and summary_num[c][5] == 0:
+         if len(train[c].dropna(axis = 0).unique()) == 1:
+           outlier_sparse[c] = summary_num[c][[0,5]]
 
 outlier_num = pd.DataFrame(outlier_dict)
 outlier_bool_pd = pd.DataFrame(outlier_bool)
+outlier_sparse_pd = pd.DataFrame(outlier_sparse)
 suspect_num = pd.DataFrame(suspect_dict)
 sparse_num = pd.DataFrame(sparse_dict)
 large_num = pd.DataFrame(large_dict)
@@ -210,6 +215,7 @@ if ifstore == True:
    print('Store back...')
    outlier_num.to_csv('./data/outlier_num.csv', index = False)
    outlier_bool_pd.to_csv('./data/outlier_bool.csv', index = False)
+   outlier_sparse_pd.to_csv('./data/outlier_sparse.csv', index = False)
    suspect_num.to_csv('./data/list_large_gap.csv', index = False)
    sparse_num.to_csv('./data/list_sparse.csv', index = False)
    large_num.to_csv('./data/list_large_item.csv', index = False)
