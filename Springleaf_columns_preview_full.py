@@ -17,19 +17,11 @@ nBatch = 20000
 
 ifstore = True
 y_train = np.zeros([nline_trn, 1])
-#rlist = range(np.ceil(float(nline_trn)/float(nBatch)).astype(int)) 
-#for i in rlist:
-#reading data in batches
-#    if i == 0:
 train = pd.read_csv("./data/train.csv")
-#    else: 
-#        train = pd.read_csv("./data/train.csv", nrows=nBatch,
-#                            skiprows= range(1,i*nBatch+1))
 nrows = len(train.index)
 ncols = len(train.columns)
    
 train.drop(['ID', 'target'], axis=1, inplace = True)
-#  for each column, make a summary of elements, stored in info_num, info_char
 
 def isTimeFormat(input):
     try:
@@ -37,7 +29,7 @@ def isTimeFormat(input):
         return True
     except ValueError:
         return False
-#    if i == 0:
+#  for each column, make a summary of elements, stored in info_num, info_char
 info_num = {}
 info_char = {}
 info_count_str = {}
@@ -55,8 +47,6 @@ for j, c in enumerate(train):
        train[c][train[c] == "[]"] = NA
        train[c][train[c] == ""] = NA
        train[c][train[c] == -1] = NA
-            #string elements to find unique strings
-#            if i == 0:
        trn_na_more = train[c].dropna(axis = 0)
        if len(trn_na_more) == 0:
            print('The all nan column name'+ c)
