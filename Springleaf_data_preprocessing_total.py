@@ -3,7 +3,7 @@
 # Python script for Springleaf data preprocessing
 # https://www.kaggle.com/c/springleaf-marketing-response
 # modify to load the whole data
-# In[137]:
+# This script load data in sequential manner
 
 import numpy as np
 from numpy import nan as NA
