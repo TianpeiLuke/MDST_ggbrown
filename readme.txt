@@ -69,3 +69,5 @@ by Tianpei Xie
       3) Given all csv. file in ./data/, run Springleaf_data_preprocessing_trn.py for training preprocessing, and Springleaf_data_preprocessing_tst.py for test preprocessing.
       4) Springleaf_data_preprocessing_total.py do the same thing for training data in sequential manner
       5) After running the Springleaf_data__preprocesing_*.py file, run Springleaf_model_construction.py to learn and predict on test samples, and save to submission file
+
+   2. Store the columns that all zeros in outlier_sparse.csv in ./data/
