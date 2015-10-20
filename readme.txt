@@ -62,8 +62,8 @@ by Tianpei Xie
    3. Not improve in score (Tianpei submission)
    
 
-10-19-2015
-   1. The file descriptions are as follows:
+================================= Execution Procedure ==================================
+   1. Run scripts are as follows:
       1) Run Springleaf_columns_preview_full.py for raw data if you need to capture more statistics of data; It generates csv. file that summaries data in ./data/
       2) Springleaf_columns_preview.py is for small memory machine, as it load data sequentially
       3) Given all csv. file in ./data/, run Springleaf_data_preprocessing_trn.py for training preprocessing, and Springleaf_data_preprocessing_tst.py for test preprocessing.
