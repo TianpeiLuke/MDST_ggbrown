@@ -62,7 +62,7 @@ by Tianpei Xie
    3. Not improve in score (Tianpei submission)
    
 
-================================= Execution Procedure ==================================
+================ Execution Procedure ========================
    1. Run scripts are as follows:
       1) Run Springleaf_columns_preview_full.py for raw data if you need to capture more statistics of data; It generates csv. file that summaries data in ./data/
       2) Springleaf_columns_preview.py is for small memory machine, as it load data sequentially
