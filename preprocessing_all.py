@@ -35,8 +35,8 @@ most_common_str= pd.read_csv('./data/list_common_str4.csv')
 rlist = range(np.ceil(float(nline_trn)/float(nBatch)).astype(int)) 
 for i in rlist:
 #reading data in batches
-    print "===================================================="
-    print "run %i: Reading..." % i
+    print("====================================================")
+    print("run %i: Reading..." % i)
     if i == 0:
         train = pd.read_csv("./data/train.csv", nrows=nBatch)
     else: 
@@ -60,14 +60,14 @@ for i in rlist:
     # Proportio = (81, 82, 74, 65, 64, 1, 2, 3, 4, 5, 6, 7, 13, 14, 15, 16, 32, 33, 34, 35, 36, 37, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57) # white list
     #black_list = (214, 83, 84, 79, 80, 77, 78, 76, 69, 70, 71, 72, 68, 67, 66, 63, 62, 61, 60, 59, 58, 114, 73, 40, 41, 42, 43, 39, 38, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 21, 20, 19, 18, 17, 8, 9, 10, 11, 12, 75, 44, 404, 305, 283, 222, 202, 204, 216, 217, 466, 467, 493)
     #black_list += mixed_types
-    print "\nDrop columns with most entities > 9990..."
-    print "Drop columns with identical boolean and string variables "
+    print("\nDrop columns with most entities > 9990...")
+    print("Drop columns with identical boolean and string variables ")
     train.drop(all_nan.columns, axis = 1, inplace = True)
     train.drop(outlier_num.columns, axis=1, inplace = True)
     train.drop(outlier_bool.columns, axis=1, inplace = True)
     train.drop(outlier_str.columns, axis = 1, inplace = True)
     train.drop(outlier_frq_str.columns, axis = 1, inplace = True)
-    print "Column count: %d"  % len(train.columns)
+    print("Column count: %d"  % len(train.columns))
     #black_list_columns = [str(n).zfill(4) for n in black_list_columns]
     #black_list_columns = ['VAR_' + n for n in black_list_columns]  of NA values
 
@@ -80,17 +80,17 @@ for i in rlist:
 # It looks like NA is represented in character columns by -1 or [] or blank values, so convert these to explicit NAs. 
 # Not entirely sure this is the right thing to do as there are real NA values, as well as -1 values already existing, 
 # however it can be tested in predictive performance.
-    print "Replace -1, [], empty as nan"
+    print("Replace -1, [], empty as nan")
     train_char[train_char=="-1"] = NA
     train_char[train_char==""] = NA
     train_char[train_char=="[]"] = NA
 
 
-    print "Parse the date"
+    print("Parse the date")
     train_date = train[time_feature.columns]
     train_char.drop(time_feature.columns, axis = 1, inplace = True)
     
-    print "Convert Boolean columns"
+    print("Convert Boolean columns")
     list_diff = np.setdiff1d(train_char.columns, most_common_str.columns)    
     #boolen columns
     train_bool = train[list_diff]
@@ -99,7 +99,7 @@ for i in rlist:
        le.fit(train[c])
        train_bool.loc[:,c] = le.transform(train[c])
 
-    print "Convert top 4 frequent string into indicator variables"
+    print("Convert top 4 frequent string into indicator variables")
     train_dummy = train_char[most_common_str.columns]
     for c in most_common_str.columns:
         unique_list = most_common_str[c].dropna(axis = 0)
@@ -121,7 +121,7 @@ for i in rlist:
 
 # In[222]:
 # Maintain the feature ordering
-    print "Feature stored back...\n"
+    print("Feature stored back...\n")
     data_cleaned = train
     data_cleaned[list_diff] = train_bool
 #    data_cleaned[train_char.columns.values]= train_char
